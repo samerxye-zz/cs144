@@ -26,7 +26,8 @@ public class ComputeSHA {
         // Byte -> Hex
         StringBuffer sb = new StringBuffer();
         for (int i=0;i<mdbytes.length;i++) {
-    	  	sb.append(Integer.toHexString(0xFF & mdbytes[i]));
+	    //sb.append(Integer.toHexString(0xFF & mdbytes[i]));
+		sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
     	}
 
         System.out.println(sb.toString());
