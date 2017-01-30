@@ -407,7 +407,8 @@ class MyParserPrint {
         item.setBuyPrice(strip(getElementTextByTagNameNR(e, "Buy_Price")));
         item.setFirstBid(strip(getElementTextByTagNameNR(e, "First_Bid")));
         item.setCurrently(strip(getElementTextByTagNameNR(e, "Currently")));
-        Element[] bids = getElementsByTagNameNR(e, "Bid");
+        Element bidsElem = getElementsByTagNameNR(e, "Bids");
+        Element[] bids = getElementsByTagNameNR(bidsElem, "Bid");
         for(int i=0; i<bids.length; i++) {
             Element bidder = getElementByTagNameNR(bids[i], "Bidder");
             processBid(bids[i], item.getId(), bidder.getAttribute("UserID"));
