@@ -40,7 +40,198 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
 
-
+class Item {
+    private long id;
+    private String userId;
+    private String name;
+    private double currently;
+    private double buy_price;
+    private double first_bid;
+    private int number_of_bids;
+    private String location;
+    private double latitude;
+    private double longitude;
+    private String country;
+    private String starts;
+    private String ends;
+    private String description;
+    void setId(long id) {
+        this.id = id;
+    }
+    void setUserId(String userId) {
+        this.userId = userId;
+    }
+    void setName(String name) {
+        this.name = name;
+    }
+    void setCurrently(double currently) {
+        this.currently = currently;
+    }
+    void setBuyPrice(double buy_price) {
+        this.buy_price = buy_price;
+    }
+    void setFirstBid(double first_bid) {
+        this.first_bid = first_bid;
+    }
+    void setNumberOfBids(int number_of_bids) {
+        this.number_of_bids = number_of_bids;
+    }
+    void setLocation(String location) {
+        this.location = location;
+    }
+    void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+    void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+    void setCountry(String country) {
+        this.country = country;
+    }
+    void setStarts(String starts) {
+        this.starts = starts;
+    }
+    void setEnds(String ends) {
+        this.ends = ends;
+    }
+    void setDescription(String description) {
+        this.description = description;
+    }
+    long getId() {
+        return id;
+    }
+    String getUserId() {
+        return userId;
+    }
+    String getName() {
+        return name;
+    }
+    double getCurrently() {
+        return currently;
+    }
+    double getBuyPrice() {
+        return buy_price;
+    }
+    double getFirstBid() {
+        return first_bid;
+    }
+    int getNumberOfBids() {
+        return number_of_bids;
+    }
+    String getLocation() {
+        return location;
+    }
+    double getLatitude() {
+        return latitude;
+    }
+    double getLongitude() {
+        return longitude;
+    }
+    String getCountry() {
+        return country;
+    }
+    String getStarts() {
+        return starts;
+    }
+    String getEnds() {
+        return ends;
+    }
+    String getDescription() {
+        return description;
+    }
+}
+class Bidder {
+    private String userId;
+    private int rating;
+    private String location;
+    private String country;
+    void setUserId(String userId) {
+        this.userId = userId;
+    }
+    void setRating(int rating) {
+        this.rating = rating;
+    }
+    void setLocation(String location) {
+        this.location = location;
+    }
+    void setCountry(String country) {
+        this.country = country;
+    }
+    String getUserId() {
+        return userId;
+    }
+    int getRating() {
+        return rating;
+    }
+    String getLocation() {
+        return location;
+    }
+    String getCountry() {
+        return country;
+    }
+}
+class Bid {
+    private long itemId;
+    private String userId;
+    private String time;
+    private double amount;
+    void setItemId(long itemId) {
+        this.itemId = itemId;
+    }
+    void setUserId(String userId) {
+        this.userId = userId;
+    }
+    void setTime(String time) {
+        this.time = time;
+    }
+    void setAmount(double amount) {
+        this.amount = amount;
+    }
+    long getItemId() {
+        return itemId;
+    }
+    String getUserId() {
+        return userId;
+    }
+    String getTime() {
+        return time;
+    }
+    double getAmount() {
+        return amount;
+    }
+}
+class Seller {
+    private String userId;
+    private int rating;
+    void setUserId(String userId) {
+        this.userId = userId;
+    }
+    void setRating(int rating) {
+        this.rating = rating;
+    }
+    String getUserId() {
+        return userId;
+    }
+    int getRating() {
+        return rating;
+    }
+}
+class Category {
+    private String category;
+    private long itemId;
+    void setCategory(String category) {
+        this.category = category;
+    }
+    void setItemId(long itemId) {
+        this.itemId = itemId;
+    }
+    String getCategory() {
+        return category;
+    }
+    long getItemId() {
+        return itemId;
+    }
+}
 class MyParserPrint {
     
     static final String columnSeparator = "|*|";
