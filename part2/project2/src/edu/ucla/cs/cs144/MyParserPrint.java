@@ -236,7 +236,11 @@ class MyParserPrint {
     
     static final String columnSeparator = "|*|";
     static DocumentBuilder builder;
-    
+    static HashMap<String, Item> itemHash;
+    static HashMap<String, Bidder> bidderHash;
+    static HashMap<String, Bid> bidHash;
+    static HashMap<String, Category> categoryHash;
+    static HashMap<String, Seller> sellerHash;
     static final String[] typeName = {
 	"none",
 	"Element",
@@ -373,12 +377,98 @@ class MyParserPrint {
         
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
+        itemHash = new HashMap<String, Item>();
+        bidderHash = new HashMap<String, Bidder>();
+        bidHash = new HashMap<String, Bid>();
+        categoryHash = new HashMap<String, Category>();
+        sellerHash = new HashMap<String, Seller>();
         Element elem = doc.getDocumentElement();
         System.out.println("DEBUG: "+doc.getDocumentElement().toString());
-        
+        Elements[] items = getElementsByTagNameNR(elem, "Item");
+        for(int i=0; i<items.length; i++) {
+            processItem(item[i]);
+        }
         /**************************************************************/
         
-        recursiveDescent(doc, 0);
+        //recursiveDescent(doc, 0);
+    }
+
+    static void processItem(Element e) {
+        Item item = new Item();
+        item.setId(e.getAttribute("ItemID"));
+        Element seller = getElementByTagNameNR(e, "Seller");
+        processSeller(seller);
+        Element[] categories = getElementsByTagNameNR(e, "Category");
+        for(int i=0; i<categories.length; i++) {
+            processCategory(categories[i], item.getId());
+        }
+        item.setUserId(seller.getAttribute("UserID"));
+        item.setName(getElementTextByTagNameNR(e, "Name"))
+        item.setBuyPrice(strip(getElementTextByTagNameNR(e, "Buy_Price")));
+        item.setFirstBid(strip(getElementTextByTagNameNR(e, "First_Bid")));
+        item.setCurrently(strip(getElementTextByTagNameNR(e, "Currently")));
+        Element[] bids = getElementsByTagNameNR(e, "Bid");
+        for(int i=0; i<bids.length; i++) {
+            Element bidder = getElementByTagNameNR(bids[i], "Bidder");
+            processBid(bids[i], item.getId(), bidder.getAttribute("UserID"));
+            processBidder(bidder);
+        }
+        String itemStarted = getElementTextByTagNameNR(e, "Started");
+        String itemEnds = getElementTextByTagNameNR(e, "Ends");
+        String started = xmlTimeToSqlTime(itemStarted);
+        String ends = xmlTimeToSqlTime(itemEnds);
+        item.setStarts(started);
+        item.setEnds(ends);
+        String desc = getElementTextByTagNameNR(e, "Description");
+        if(desc.length() > 4000)
+                desc = desc.substring(0, 4000);
+        item.setDescription(desc);
+        itemHash.put(item.getItemId(), item);
+    }
+
+    static void processSeller(Element e) {
+        Seller seller = new Seller();
+        seller.setUserId(e.getAttribute("UserID"));
+        seller.setRating(e.getAttribute("Rating"));
+        sellerHash.put(seller.getUserId(), seller);
+    }
+
+    static void processCategory(Element e, Long itemId) {
+        Category category = new Category();
+        category.setCategory(getElementText(e));
+        category.setItemId(itemId);
+        categoryHash.put(category.getCategory()+itemId.toString(), category);
+    }
+
+    static void processBid(Element e, Long itemId, String userId) {
+        Bid bid = new Bid();
+        bid.setItemId(itemId);
+        bid.setUserId(userId);
+        bid.setTime(getElementTextByTagNameNR(e, "Time"));
+        bid.setAmount(strip(getElementTextByTagNameNR(e, "Amount")));
+        bidHash.put(itemId.toString()+bid.getUserId()+bid.getTime(), bid);
+    }
+
+    static void processBidder(Element e) {
+        Bidder bidder = new Bidder();
+        bidder.setUserId(e.getAttribute("UserID"));
+        bidder.setRating(e.getAttribute("Rating"));
+        bidder.setLocation(getElementTextByTagNameNR(e, "Location"));
+        bidder.setCountry(getElementTextByTagNameNR(e, "Country"));
+        bidderHash.put(userId, bidder);
+    }
+
+    static String xmlTimeToSqlTime(String xmlTime) {
+        SimpleDateFormat xmlFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
+        SimpleDateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = xmlFormat.parse(xmlTime);    
+        }
+        catch(ParseException pe) {
+            System.out.println("ERROR: Cannot parse \"" + xmlTime + "\"");
+        }
+        return sqlFormat.format(date);
     }
     
     public static void recursiveDescent(Node n, int level) {
