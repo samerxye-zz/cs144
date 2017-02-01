@@ -499,10 +499,10 @@ class MyParserPrint {
         item.setUserId(seller.getAttribute("UserID"));
         item.setName(getElementTextByTagNameNR(e, "Name"));
         String buyPrice = getElementTextByTagNameNR(e, "Buy_Price");
-        if (buyPrice == null)
+        if (buyPrice == null||buyPrice == "")
             item.setBuyPrice(Double.NaN);
         else
-            item.setBuyPrice(Double.parseDouble(strip(buy_price)));
+            item.setBuyPrice(Double.parseDouble(strip(buyPrice)));
         item.setFirstBid(Double.parseDouble(strip(getElementTextByTagNameNR(e, "First_Bid"))));
         item.setCurrently(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Currently"))));
         Element bidsElem = getElementByTagNameNR(e, "Bids");
