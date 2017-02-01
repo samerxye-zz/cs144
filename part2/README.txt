@@ -5,7 +5,7 @@ Solutions for Part B:
 ___________________________________________
 
 Table Name: Item
-Primary Key: Item
+Primary Key: ItemID
 Attributes:
 	ItemID
 	UserID

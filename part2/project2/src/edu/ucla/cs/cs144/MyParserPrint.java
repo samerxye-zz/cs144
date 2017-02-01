@@ -39,11 +39,11 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
-interface TableRow {
-    abstract String[] getRowStringAsArray();
-    abstract String getRowAsString(String columnDivider);
+class TableRow {
+    //abstract String[] getRowStringAsArray();
+    public String getRowAsString(String columnDivider) { return "";}
 }
-class Item implements TableRow {
+class Item extends TableRow {
     private long id;
     private String userId;
     private String name;
@@ -142,20 +142,20 @@ class Item implements TableRow {
     String getDescription() {
         return description;
     }
+    // @Override
+    // String[] getRowStringAsArray(){
+    //     return {String.valueOf(id), userId, name, 
+    //         String.valueOf(currently), 
+    //         String.valueOf(buy_price), 
+    //         String.valueOf(first_bid),
+    //         String.valueOf(number_of_bids),
+    //         location,String.valueOf(latitude),
+    //         String.valueOf(longitude),
+    //         country, starts, ends, description
+    //     };
+    // }
     @Override
-    String[] getRowStringAsArray(){
-        return {String.valueOf(id), userId, name, 
-            String.valueOf(currently), 
-            String.valueOf(buy_price), 
-            String.valueOf(first_bid),
-            String.valueOf(number_of_bids),
-            location,String.valueOf(latitude),
-            String.valueOf(longitude),
-            country, starts, ends, description
-        };
-    }
-    @Override
-    String getRowAsString(String columnDivider) {
+    public String getRowAsString(String columnDivider) {
         return String.valueOf(id)+columnDivider+
             userId+columnDivider+
             name+columnDivider+
@@ -168,10 +168,10 @@ class Item implements TableRow {
             String.valueOf(longitude)+columnDivider+
             country+columnDivider+
             starts+columnDivider+
-            ends,+columnDivider+description;
+            ends+columnDivider+description;
     }
 }
-class Bidder implements TableRow {
+class Bidder extends TableRow {
     private String userId;
     private int rating;
     private String location;
@@ -200,20 +200,20 @@ class Bidder implements TableRow {
     String getCountry() {
         return country;
     }
+    // @Override
+    // String[] getRowStringAsArray(){
+    //     return {userId, String.valueOf(rating),
+    //         location,country};
+    // }
     @Override
-    String[] getRowStringAsArray(){
-        return {userId, String.valueOf(rating),
-            location,country};
-    }
-    @Override
-    String getRowAsString(String columnDivider) {
+    public String getRowAsString(String columnDivider) {
         return userId+columnDivider+
             String.valueOf(rating)+columnDivider+
             location+columnDivider+
             country;
     }
 }
-class Bid implements TableRow {
+class Bid extends TableRow {
     private long itemId;
     private String userId;
     private String time;
@@ -242,20 +242,20 @@ class Bid implements TableRow {
     double getAmount() {
         return amount;
     }
+    // @Override
+    // String[] getRowStringAsArray(){
+    //     return {String.valueOf(itemId), userId, 
+    //         time, String.valueOf(amount)};
+    // }
     @Override
-    String[] getRowStringAsArray(){
-        return {String.valueOf(itemId), userId, 
-            time, String.valueOf(amount)};
-    }
-    @Override
-    String getRowAsString(String columnDivider) {
+    public String getRowAsString(String columnDivider) {
         return String.valueOf(itemId)+columnDivider+
             userId+columnDivider+
             time+columnDivider+
             String.valueOf(amount);
     }
 }
-class Seller implements TableRow {
+class Seller extends TableRow {
     private String userId;
     private int rating;
     void setUserId(String userId) {
@@ -270,17 +270,17 @@ class Seller implements TableRow {
     int getRating() {
         return rating;
     }
+    // @Override
+    // String[] getRowStringAsArray(){
+    //     return {userId, String.valueOf(rating)};
+    // }
     @Override
-    String[] getRowStringAsArray(){
-        return {userId, String.valueOf(rating)};
-    }
-    @Override
-    String getRowAsString(String columnDivider) {
+    public String getRowAsString(String columnDivider) {
         return userId+columnDivider+
             String.valueOf(rating);
     }
 }
-class Category implements TableRow {
+class Category extends TableRow {
     private String category;
     private long itemId;
     void setCategory(String category) {
@@ -295,12 +295,12 @@ class Category implements TableRow {
     long getItemId() {
         return itemId;
     }
+    // @Override
+    // String[] getRowStringAsArray(){
+    //     return {category, String.valueOf(itemId)};
+    // }
     @Override
-    String[] getRowStringAsArray(){
-        return {category, String.valueOf(itemId)};
-    }
-    @Override
-    String getRowAsString(String columnDivider) {
+    public String getRowAsString(String columnDivider) {
         return category+columnDivider+
             String.valueOf(itemId);
     }
@@ -310,11 +310,11 @@ class MyParserPrint {
     static final String columnSeparator = "|*|";
     static DocumentBuilder builder;
 
-    static HashMap<String, Item> itemHash;
-    static HashMap<String, Bidder> bidderHash;
-    static HashMap<String, Bid> bidHash;
-    static HashMap<String, Category> categoryHash;
-    static HashMap<String, Seller> sellerHash;
+    static HashMap<String, TableRow> itemHash;
+    static HashMap<String, TableRow> bidderHash;
+    static HashMap<String, TableRow> bidHash;
+    static HashMap<String, TableRow> categoryHash;
+    static HashMap<String, TableRow> sellerHash;
     private static BufferedWriter itemFileWriter;
     private static BufferedWriter bidderFileWriter;
     private static BufferedWriter bidFileWriter;
@@ -435,7 +435,7 @@ class MyParserPrint {
     
     /* Process one items-???.xml file.
      */
-    static void processFile(File xmlFile) {
+    static void processFile(File xmlFile) throws IOException {
         Document doc = null;
         try {
             doc = builder.parse(xmlFile);
@@ -457,16 +457,16 @@ class MyParserPrint {
         
         /* Fill in code here (you will probably need to write auxiliary
             methods). */
-        itemHash = new HashMap<String, Item>();
-        bidderHash = new HashMap<String, Bidder>();
-        bidHash = new HashMap<String, Bid>();
-        categoryHash = new HashMap<String, Category>();
-        sellerHash = new HashMap<String, Seller>();
+        itemHash = new HashMap<String, TableRow>();
+        bidderHash = new HashMap<String, TableRow>();
+        bidHash = new HashMap<String, TableRow>();
+        categoryHash = new HashMap<String, TableRow>();
+        sellerHash = new HashMap<String, TableRow>();
         Element elem = doc.getDocumentElement();
         System.out.println("DEBUG: "+doc.getDocumentElement().toString());
-        Elements[] items = getElementsByTagNameNR(elem, "Item");
+        Element[] items = getElementsByTagNameNR(elem, "Item");
         for(int i=0; i<items.length; i++) {
-            processItem(item[i]);
+            processItem(items[i]);
         }
         itemFileWriter = new BufferedWriter(new FileWriter("item.dat",true));
         bidderFileWriter = new BufferedWriter(new FileWriter("bidder.dat",true));
@@ -485,7 +485,7 @@ class MyParserPrint {
 
     static void processItem(Element e) {
         Item item = new Item();
-        item.setId(e.getAttribute("ItemID"));
+        item.setId(Long.parseLong(e.getAttribute("ItemID")));
         Element seller = getElementByTagNameNR(e, "Seller");
         processSeller(seller);
         Element[] categories = getElementsByTagNameNR(e, "Category");
@@ -493,11 +493,11 @@ class MyParserPrint {
             processCategory(categories[i], item.getId());
         }
         item.setUserId(seller.getAttribute("UserID"));
-        item.setName(getElementTextByTagNameNR(e, "Name"))
-        item.setBuyPrice(strip(getElementTextByTagNameNR(e, "Buy_Price")));
-        item.setFirstBid(strip(getElementTextByTagNameNR(e, "First_Bid")));
-        item.setCurrently(strip(getElementTextByTagNameNR(e, "Currently")));
-        Element bidsElem = getElementsByTagNameNR(e, "Bids");
+        item.setName(getElementTextByTagNameNR(e, "Name"));
+        item.setBuyPrice(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Buy_Price"))));
+        item.setFirstBid(Double.parseDouble(strip(getElementTextByTagNameNR(e, "First_Bid"))));
+        item.setCurrently(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Currently"))));
+        Element bidsElem = getElementByTagNameNR(e, "Bids");
         Element[] bids = getElementsByTagNameNR(bidsElem, "Bid");
         for(int i=0; i<bids.length; i++) {
             Element bidder = getElementByTagNameNR(bids[i], "Bidder");
@@ -514,13 +514,13 @@ class MyParserPrint {
         if(desc.length() > 4000)
                 desc = desc.substring(0, 4000);
         item.setDescription(desc);
-        itemHash.put(item.getItemId(), item);
+        itemHash.put(String.valueOf(item.getId()), item);
     }
 
     static void processSeller(Element e) {
         Seller seller = new Seller();
         seller.setUserId(e.getAttribute("UserID"));
-        seller.setRating(e.getAttribute("Rating"));
+        seller.setRating(Integer.parseInt(e.getAttribute("Rating")));
         sellerHash.put(seller.getUserId(), seller);
     }
 
@@ -536,17 +536,17 @@ class MyParserPrint {
         bid.setItemId(itemId);
         bid.setUserId(userId);
         bid.setTime(getElementTextByTagNameNR(e, "Time"));
-        bid.setAmount(strip(getElementTextByTagNameNR(e, "Amount")));
+        bid.setAmount(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Amount"))));
         bidHash.put(itemId.toString()+bid.getUserId()+bid.getTime(), bid);
     }
 
     static void processBidder(Element e) {
         Bidder bidder = new Bidder();
         bidder.setUserId(e.getAttribute("UserID"));
-        bidder.setRating(e.getAttribute("Rating"));
+        bidder.setRating(Integer.parseInt(e.getAttribute("Rating")));
         bidder.setLocation(getElementTextByTagNameNR(e, "Location"));
         bidder.setCountry(getElementTextByTagNameNR(e, "Country"));
-        bidderHash.put(userId, bidder);
+        bidderHash.put(e.getAttribute("UserID"), bidder);
     }
 
     static String xmlTimeToSqlTime(String xmlTime) {
@@ -562,12 +562,13 @@ class MyParserPrint {
         return sqlFormat.format(date);
     }
 
-    static void writeToFile(BufferedWriter output, HashMap<String, TableRow> data,) throws IOException
+    static void writeToFile(BufferedWriter output, HashMap<String, TableRow> data) throws IOException
     {
         Iterator it = data.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
-            output.write(pair.getValue().getRowAsString(columnSeparator));
+            TableRow row = (TableRow)pair.getValue();
+            output.write(row.getRowAsString(columnSeparator));
             output.newLine();
             it.remove();
         }
@@ -599,7 +600,7 @@ class MyParserPrint {
             recursiveDescent(nlist.item(i), level+1);
     }  
     
-    public static void main (String[] args) {
+    public static void main (String[] args) throws IOException {
         if (args.length == 0) {
             System.out.println("Usage: java MyParser [file] [file] ...");
             System.exit(1);
