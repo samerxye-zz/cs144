@@ -39,8 +39,11 @@ import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.ErrorHandler;
-
-class Item {
+interface TableRow {
+    abstract String[] getRowStringAsArray();
+    abstract String getRowAsString(String columnDivider);
+}
+class Item implements TableRow {
     private long id;
     private String userId;
     private String name;
@@ -139,8 +142,36 @@ class Item {
     String getDescription() {
         return description;
     }
+    @Override
+    String[] getRowStringAsArray(){
+        return {String.valueOf(id), userId, name, 
+            String.valueOf(currently), 
+            String.valueOf(buy_price), 
+            String.valueOf(first_bid),
+            String.valueOf(number_of_bids),
+            location,String.valueOf(latitude),
+            String.valueOf(longitude),
+            country, starts, ends, description
+        };
+    }
+    @Override
+    String getRowAsString(String columnDivider) {
+        return String.valueOf(id)+columnDivider+
+            userId+columnDivider+
+            name+columnDivider+
+            String.valueOf(currently)+columnDivider+
+            String.valueOf(buy_price)+columnDivider+
+            String.valueOf(first_bid)+columnDivider+
+            String.valueOf(number_of_bids)+columnDivider+
+            location+columnDivider+
+            String.valueOf(latitude)+columnDivider+
+            String.valueOf(longitude)+columnDivider+
+            country+columnDivider+
+            starts+columnDivider+
+            ends,+columnDivider+description;
+    }
 }
-class Bidder {
+class Bidder implements TableRow {
     private String userId;
     private int rating;
     private String location;
@@ -169,8 +200,20 @@ class Bidder {
     String getCountry() {
         return country;
     }
+    @Override
+    String[] getRowStringAsArray(){
+        return {userId, String.valueOf(rating),
+            location,country};
+    }
+    @Override
+    String getRowAsString(String columnDivider) {
+        return userId+columnDivider+
+            String.valueOf(rating)+columnDivider+
+            location+columnDivider+
+            country;
+    }
 }
-class Bid {
+class Bid implements TableRow {
     private long itemId;
     private String userId;
     private String time;
@@ -199,8 +242,20 @@ class Bid {
     double getAmount() {
         return amount;
     }
+    @Override
+    String[] getRowStringAsArray(){
+        return {String.valueOf(itemId), userId, 
+            time, String.valueOf(amount)};
+    }
+    @Override
+    String getRowAsString(String columnDivider) {
+        return String.valueOf(itemId)+columnDivider+
+            userId+columnDivider+
+            time+columnDivider+
+            String.valueOf(amount);
+    }
 }
-class Seller {
+class Seller implements TableRow {
     private String userId;
     private int rating;
     void setUserId(String userId) {
@@ -215,8 +270,17 @@ class Seller {
     int getRating() {
         return rating;
     }
+    @Override
+    String[] getRowStringAsArray(){
+        return {userId, String.valueOf(rating)};
+    }
+    @Override
+    String getRowAsString(String columnDivider) {
+        return userId+columnDivider+
+            String.valueOf(rating);
+    }
 }
-class Category {
+class Category implements TableRow {
     private String category;
     private long itemId;
     void setCategory(String category) {
@@ -231,16 +295,32 @@ class Category {
     long getItemId() {
         return itemId;
     }
+    @Override
+    String[] getRowStringAsArray(){
+        return {category, String.valueOf(itemId)};
+    }
+    @Override
+    String getRowAsString(String columnDivider) {
+        return category+columnDivider+
+            String.valueOf(itemId);
+    }
 }
 class MyParserPrint {
     
     static final String columnSeparator = "|*|";
     static DocumentBuilder builder;
+
     static HashMap<String, Item> itemHash;
     static HashMap<String, Bidder> bidderHash;
     static HashMap<String, Bid> bidHash;
     static HashMap<String, Category> categoryHash;
     static HashMap<String, Seller> sellerHash;
+    private static BufferedWriter itemFileWriter;
+    private static BufferedWriter bidderFileWriter;
+    private static BufferedWriter bidFileWriter;
+    private static BufferedWriter categoryFileWriter;
+    private static BufferedWriter sellerFileWriter;
+
     static final String[] typeName = {
 	"none",
 	"Element",
@@ -388,6 +468,16 @@ class MyParserPrint {
         for(int i=0; i<items.length; i++) {
             processItem(item[i]);
         }
+        itemFileWriter = new BufferedWriter(new FileWriter("item.dat",true));
+        bidderFileWriter = new BufferedWriter(new FileWriter("bidder.dat",true));
+        bidFileWriter = new BufferedWriter(new FileWriter("bid.dat",true));
+        categoryFileWriter = new BufferedWriter(new FileWriter("category.dat",true));
+        sellerFileWriter = new BufferedWriter(new FileWriter("seller.dat",true));
+        writeToFile(itemFileWriter, itemHash);
+        writeToFile(bidderFileWriter, bidderHash);
+        writeToFile(bidFileWriter, bidHash);
+        writeToFile(categoryFileWriter, categoryHash);
+        writeToFile(sellerFileWriter, sellerHash);
         /**************************************************************/
         
         //recursiveDescent(doc, 0);
@@ -470,6 +560,18 @@ class MyParserPrint {
             System.out.println("ERROR: Cannot parse \"" + xmlTime + "\"");
         }
         return sqlFormat.format(date);
+    }
+
+    static void writeToFile(BufferedWriter output, HashMap<String, TableRow> data,) throws IOException
+    {
+        Iterator it = data.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            output.write(pair.getValue().getRowAsString(columnSeparator));
+            output.newLine();
+            it.remove();
+        }
+        output.close();
     }
     
     public static void recursiveDescent(Node n, int level) {
