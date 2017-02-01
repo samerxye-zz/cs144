@@ -156,11 +156,15 @@ class Item extends TableRow {
     // }
     @Override
     public String getRowAsString(String columnDivider) {
+        String bp = "NULL";
+        if (!Double.isNaN(buy_price)) {
+            bp = String.valueOf(buy_price);
+        }
         return String.valueOf(id)+columnDivider+
             userId+columnDivider+
             name+columnDivider+
             String.valueOf(currently)+columnDivider+
-            String.valueOf(buy_price)+columnDivider+
+            bp+columnDivider+
             String.valueOf(first_bid)+columnDivider+
             String.valueOf(number_of_bids)+columnDivider+
             location+columnDivider+
@@ -494,7 +498,11 @@ class MyParserPrint {
         }
         item.setUserId(seller.getAttribute("UserID"));
         item.setName(getElementTextByTagNameNR(e, "Name"));
-        item.setBuyPrice(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Buy_Price"))));
+        String buyPrice = getElementTextByTagNameNR(e, "Buy_Price");
+        if (buyPrice == null)
+            item.setBuyPrice(Double.NaN);
+        else
+            item.setBuyPrice(Double.parseDouble(strip(buy_price)));
         item.setFirstBid(Double.parseDouble(strip(getElementTextByTagNameNR(e, "First_Bid"))));
         item.setCurrently(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Currently"))));
         Element bidsElem = getElementByTagNameNR(e, "Bids");
