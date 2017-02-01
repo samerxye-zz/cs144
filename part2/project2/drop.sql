@@ -1,0 +1,9 @@
+DROP TABLE Item;
+
+DROP TABLE Bidder;
+
+DROP TABLE Bid;
+
+DROP TABLE Seller;
+
+DROP TABLE Category;
