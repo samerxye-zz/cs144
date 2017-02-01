@@ -157,8 +157,16 @@ class Item extends TableRow {
     @Override
     public String getRowAsString(String columnDivider) {
         String bp = "NULL";
+        String lat = "NULL";
+        String lon = "NULL";
         if (!Double.isNaN(buy_price)) {
             bp = String.valueOf(buy_price);
+        }
+        if (!Double.isNaN(latitude)) {
+            lat = String.valueOf(latitude);
+        }
+        if (!Double.isNaN(longitude)) {
+            lon = String.valueOf(longitude);
         }
         return String.valueOf(id)+columnDivider+
             userId+columnDivider+
@@ -168,8 +176,8 @@ class Item extends TableRow {
             String.valueOf(first_bid)+columnDivider+
             String.valueOf(number_of_bids)+columnDivider+
             location+columnDivider+
-            String.valueOf(latitude)+columnDivider+
-            String.valueOf(longitude)+columnDivider+
+            lat+columnDivider+
+            lon+columnDivider+
             country+columnDivider+
             starts+columnDivider+
             ends+columnDivider+description;
@@ -505,6 +513,7 @@ class MyParserPrint {
             item.setBuyPrice(Double.parseDouble(strip(buyPrice)));
         item.setFirstBid(Double.parseDouble(strip(getElementTextByTagNameNR(e, "First_Bid"))));
         item.setCurrently(Double.parseDouble(strip(getElementTextByTagNameNR(e, "Currently"))));
+        item.setNumberOfBids(Integer.parseInt(getElementTextByTagNameNR(e, "Number_of_Bids")));
         Element bidsElem = getElementByTagNameNR(e, "Bids");
         Element[] bids = getElementsByTagNameNR(bidsElem, "Bid");
         for(int i=0; i<bids.length; i++) {
@@ -512,6 +521,19 @@ class MyParserPrint {
             processBid(bids[i], item.getId(), bidder.getAttribute("UserID"));
             processBidder(bidder);
         }
+        item.setLocation(getElementTextByTagNameNR(e, "Location"));
+        Element location = getElementByTagNameNR(e, "Location");
+        String latitude = location.getAttribute("Latitude");
+        if (latitude == null||latitude == "")
+            item.setLatitude(Double.NaN);
+        else
+            item.setLatitude(Double.parseDouble(latitude));
+        String longitude = location.getAttribute("Longitude");
+        if (longitude == null||longitude == "")
+            item.setLongitude(Double.NaN);
+        else
+            item.setLongitude(Double.parseDouble(longitude));
+        item.setCountry(getElementTextByTagNameNR(e, "Country"));
         String itemStarted = getElementTextByTagNameNR(e, "Started");
         String itemEnds = getElementTextByTagNameNR(e, "Ends");
         String started = xmlTimeToSqlTime(itemStarted);
