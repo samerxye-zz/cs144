@@ -143,18 +143,6 @@ class Item extends TableRow {
     String getDescription() {
         return description;
     }
-    // @Override
-    // String[] getRowStringAsArray(){
-    //     return {String.valueOf(id), userId, name, 
-    //         String.valueOf(currently), 
-    //         String.valueOf(buy_price), 
-    //         String.valueOf(first_bid),
-    //         String.valueOf(number_of_bids),
-    //         location,String.valueOf(latitude),
-    //         String.valueOf(longitude),
-    //         country, starts, ends, description
-    //     };
-    // }
     @Override
     public String getRowAsString(String columnDivider) {
         String bp = "NULL";
@@ -255,11 +243,6 @@ class Bid extends TableRow {
     double getAmount() {
         return amount;
     }
-    // @Override
-    // String[] getRowStringAsArray(){
-    //     return {String.valueOf(itemId), userId, 
-    //         time, String.valueOf(amount)};
-    // }
     @Override
     public String getRowAsString(String columnDivider) {
         return String.valueOf(itemId)+columnDivider+
@@ -283,10 +266,6 @@ class Seller extends TableRow {
     int getRating() {
         return rating;
     }
-    // @Override
-    // String[] getRowStringAsArray(){
-    //     return {userId, String.valueOf(rating)};
-    // }
     @Override
     public String getRowAsString(String columnDivider) {
         return userId+columnDivider+
@@ -308,10 +287,6 @@ class Category extends TableRow {
     long getItemId() {
         return itemId;
     }
-    // @Override
-    // String[] getRowStringAsArray(){
-    //     return {category, String.valueOf(itemId)};
-    // }
     @Override
     public String getRowAsString(String columnDivider) {
         return category+columnDivider+
