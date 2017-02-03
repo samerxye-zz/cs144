@@ -214,7 +214,7 @@ class MyParserPrint {
         writeToFile(sellerFileWriter, sellerHash);
         /**************************************************************/
         
-        //recursiveDescent(doc, 0);
+        recursiveDescent(doc, 0);
     }
 
     static void processItem(Element e) {
