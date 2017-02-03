@@ -7,9 +7,9 @@ CREATE TABLE Item (
 	First_Bid DECIMAL(8,2),
 	Number_of_Bids INT,
 	Location VARCHAR(500),
-	Latitude DOUBLE, 
-	Longitude DOUBLE, 
-	Country VARCHAR(500), 
+	Latitude DOUBLE,
+	Longitude DOUBLE,
+	Country VARCHAR(500),
 	Started TIMESTAMP,
 	Ends TIMESTAMP,
 	Description VARCHAR(4000),
@@ -27,7 +27,7 @@ CREATE TABLE Bidder (
 CREATE TABLE Bid (
 	ItemID BIGINT,
 	UserID VARCHAR(500),
-	Time TIMESTAMP, ###????
+	Time TIMESTAMP,
 	Amount DECIMAL(8,2),
 	PRIMARY KEY(ItemID, UserID, Time)
 );
