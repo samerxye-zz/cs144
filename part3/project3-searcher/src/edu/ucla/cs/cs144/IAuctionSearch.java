@@ -3,6 +3,9 @@ package edu.ucla.cs.cs144;
 import edu.ucla.cs.cs144.SearchRegion;
 import edu.ucla.cs.cs144.SearchResult;
 
+import java.io.IOException;
+import org.apache.lucene.queryparser.classic.ParseException;
+
 public interface IAuctionSearch {
 	
 	/**
@@ -17,7 +20,7 @@ public interface IAuctionSearch {
 	 * SearchResult objects.
 	 */
 	public SearchResult[] basicSearch(String query, int numResultsToSkip, 
-			int numResultsToReturn);
+			int numResultsToReturn) throws IOException, ParseException;
 	
 	/**
 	 * Searhc for all items with the given keywords, which are located 
