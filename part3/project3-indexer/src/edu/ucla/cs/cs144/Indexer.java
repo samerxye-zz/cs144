@@ -28,7 +28,26 @@ public class Indexer {
     public Indexer() {
     }
 
-    public void rebuildIndexes() {
+    private IndexWriter indexWriter = null;
+
+    public IndexWriter getIndexWriter() throws IOException {
+        if (indexWriter == null) {
+            Directory indexDir = FSDirectory.open(new File("temp-index-directory")); //TODO: change to /var/lib/lucene/**indexNum**
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+            indexWriter = new IndexWriter(indexDir, config);
+        }
+        return indexWriter;
+    }
+
+    public void closeIndexWriter() throws IOException {
+        if (indexWriter != null) {
+            indexWriter.close();
+        }
+    }
+
+    public void rebuildIndexes() throws IOException {
+
+        getIndexWriter();
 
         Connection conn = null;
 
@@ -41,7 +60,7 @@ public class Indexer {
 
         try {
             int item_id;
-            String description, category;
+            String description, category, categories;
 
             PreparedStatement prepareQueryCategory = conn.prepareStatement("SELECT * FROM Category WHERE ItemID = ?");
             Statement s = conn.createStatement();
@@ -51,25 +70,24 @@ public class Indexer {
                 item_id = rs.getInt("ItemID");
                 description = rs.getString("Description");
                 System.out.println(item_id);
-                System.out.println(description);
+                //System.out.println(description);
 
+                categories = "";
                 prepareQueryCategory.setInt(1, item_id);
                 ResultSet rs_category = prepareQueryCategory.executeQuery();
                 while (rs_category.next()) {
                     category = rs_category.getString("Category");
-                    //System.out.println(category);
+                    categories += " " + category;
                 }
                 rs_category.close();
 
-                // System.out.println("Indexing hotel: " + hotel);
-                // IndexWriter writer = getIndexWriter(false);
-                // Document doc = new Document();
-                // doc.add(new StringField("id", hotel.getId(), Field.Store.YES));
-                // doc.add(new StringField("name", hotel.getName(), Field.Store.YES));
-                // doc.add(new StringField("city", hotel.getCity(), Field.Store.YES));
-                // String fullSearchableText = hotel.getName() + " " + hotel.getCity() + " " + hotel.getDescription();
-                // doc.add(new TextField("content", fullSearchableText, Field.Store.NO));
-                // writer.addDocument(doc);
+                System.out.println("Indexing item: " + item_id);
+                IndexWriter writer = getIndexWriter();
+                Document doc = new Document();
+                doc.add(new StringField("ItemID", String.valueOf(item_id), Field.Store.YES));
+                String fullSearchableText = item_id + " " + categories + " " + description;
+                doc.add(new TextField("Content", fullSearchableText, Field.Store.NO));
+                writer.addDocument(doc);
             }
 
             // close connections
@@ -88,24 +106,7 @@ public class Indexer {
             }
         }
 
-    	/*
-    	 * Add your code here to retrieve Items using the connection
-    	 * and add corresponding entries to your Lucene inverted indexes.
-         *
-         * You will have to use JDBC API to retrieve MySQL data from Java.
-         * Read our tutorial on JDBC if you do not know how to use JDBC.
-         *
-         * You will also have to use Lucene IndexWriter and Document
-         * classes to create an index and populate it with Items data.
-         * Read our tutorial on Lucene as well if you don't know how.
-         *
-         * As part of this development, you may want to add 
-         * new methods and create additional Java classes. 
-         * If you create new classes, make sure that
-         * the classes become part of "edu.ucla.cs.cs144" package
-         * and place your class source files at src/edu/ucla/cs/cs144/.
-    	 * 
-    	 */
+        closeIndexWriter();
 
 
         // close the database connection
@@ -116,8 +117,9 @@ public class Indexer {
     	}
     }    
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException {
         Indexer idx = new Indexer();
+
         idx.rebuildIndexes();
     }   
 }
