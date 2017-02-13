@@ -54,7 +54,7 @@ public class Indexer {
             Connection conn = DbManager.getConnection(true);
 
             int item_id;
-            String description, category, categories, fullSearchableText;
+            String name, description, category, categories, fullSearchableText;
 
             PreparedStatement prepareQueryCategory = conn.prepareStatement("SELECT * FROM Category WHERE ItemID = ?");
             Statement s = conn.createStatement();
@@ -62,7 +62,9 @@ public class Indexer {
             while (rs.next()) {
 
                 item_id = rs.getInt("ItemID");
+                name = rs.getString("Name");
                 description = rs.getString("Description");
+                System.out.println(name);
 
                 // retrieve categories
                 categories = "";
@@ -79,6 +81,7 @@ public class Indexer {
                 IndexWriter writer = getIndexWriter();
                 Document doc = new Document();
                 doc.add(new StringField("ItemID", String.valueOf(item_id), Field.Store.YES));
+                doc.add(new StringField("Name", name, Field.Store.YES));
                 fullSearchableText = item_id + " " + categories + " " + description;
                 doc.add(new TextField("Content", fullSearchableText, Field.Store.NO));
                 writer.addDocument(doc);
