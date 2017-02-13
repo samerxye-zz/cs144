@@ -49,18 +49,12 @@ public class Indexer {
 
         getIndexWriter();
 
-        Connection conn = null;
-
-        // create a connection to the database to retrieve Items from MySQL
-    	try {
-    	    conn = DbManager.getConnection(true);
-    	} catch (SQLException ex) {
-    	    System.out.println(ex);
-    	}
-
         try {
+
+            Connection conn = DbManager.getConnection(true);
+
             int item_id;
-            String description, category, categories;
+            String description, category, categories, fullSearchableText;
 
             PreparedStatement prepareQueryCategory = conn.prepareStatement("SELECT * FROM Category WHERE ItemID = ?");
             Statement s = conn.createStatement();
@@ -69,9 +63,8 @@ public class Indexer {
 
                 item_id = rs.getInt("ItemID");
                 description = rs.getString("Description");
-                System.out.println(item_id);
-                //System.out.println(description);
 
+                // retrieve categories
                 categories = "";
                 prepareQueryCategory.setInt(1, item_id);
                 ResultSet rs_category = prepareQueryCategory.executeQuery();
@@ -81,11 +74,12 @@ public class Indexer {
                 }
                 rs_category.close();
 
-                System.out.println("Indexing item: " + item_id);
+                // add to index
+                //System.out.println("Indexing item: " + item_id);
                 IndexWriter writer = getIndexWriter();
                 Document doc = new Document();
                 doc.add(new StringField("ItemID", String.valueOf(item_id), Field.Store.YES));
-                String fullSearchableText = item_id + " " + categories + " " + description;
+                fullSearchableText = item_id + " " + categories + " " + description;
                 doc.add(new TextField("Content", fullSearchableText, Field.Store.NO));
                 writer.addDocument(doc);
             }
@@ -94,6 +88,8 @@ public class Indexer {
             prepareQueryCategory.close();
             s.close();
             rs.close();
+            conn.close();
+
         } catch (SQLException ex){
             System.out.println("SQLException caught");
             System.out.println("---");
@@ -107,19 +103,10 @@ public class Indexer {
         }
 
         closeIndexWriter();
-
-
-        // close the database connection
-    	try {
-    	    conn.close();
-    	} catch (SQLException ex) {
-    	    System.out.println(ex);
-    	}
     }    
 
     public static void main(String args[]) throws IOException {
         Indexer idx = new Indexer();
-
         idx.rebuildIndexes();
     }   
 }
