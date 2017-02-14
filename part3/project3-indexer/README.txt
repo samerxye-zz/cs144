@@ -1,8 +1,3 @@
-
-return: itemId, name
-search over: name, category, description
-multiple keywords: OR
-
 Item table
 Category table
 Attributes: 

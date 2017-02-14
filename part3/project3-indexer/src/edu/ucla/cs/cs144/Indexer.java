@@ -22,6 +22,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
+import java.util.HashMap;
+
 public class Indexer {
     
     /** Creates a new instance of Indexer */
@@ -32,7 +34,7 @@ public class Indexer {
 
     public IndexWriter getIndexWriter() throws IOException {
         if (indexWriter == null) {
-            Directory indexDir = FSDirectory.open(new File("temp-index-directory")); //TODO: change to /var/lib/lucene/**indexNum**
+            Directory indexDir = FSDirectory.open(new File("/var/lib/lucene/index1"));
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
             indexWriter = new IndexWriter(indexDir, config);
         }
@@ -47,48 +49,45 @@ public class Indexer {
 
     public void rebuildIndexes() throws IOException {
 
-        getIndexWriter();
+        IndexWriter writer = getIndexWriter();
 
         try {
-
             Connection conn = DbManager.getConnection(true);
 
             int item_id;
-            String name, description, category, categories, fullSearchableText;
+            String name, description, category, fullSearchableText;
+            HashMap item_categories = new HashMap();
 
-            PreparedStatement prepareQueryCategory = conn.prepareStatement("SELECT * FROM Category WHERE ItemID = ?");
+            // Query #1
+            // map ItemID -> categories for efficient retrieval later
             Statement s = conn.createStatement();
-            ResultSet rs = s.executeQuery("SELECT * FROM Item");
+            ResultSet rs = s.executeQuery("SELECT * FROM Category");
+            while (rs.next()) {
+                item_id = rs.getInt("ItemID");
+                category = rs.getString("Category");
+                if (!item_categories.containsKey(item_id))
+                    item_categories.put(item_id, "");
+                item_categories.put(item_id, item_categories.get(item_id) + " " + category);
+            }
+
+            // Query #2
+            // store each item as a document in index
+            rs = s.executeQuery("SELECT * FROM Item");
             while (rs.next()) {
 
                 item_id = rs.getInt("ItemID");
                 name = rs.getString("Name");
                 description = rs.getString("Description");
-                System.out.println(name);
-
-                // retrieve categories
-                categories = "";
-                prepareQueryCategory.setInt(1, item_id);
-                ResultSet rs_category = prepareQueryCategory.executeQuery();
-                while (rs_category.next()) {
-                    category = rs_category.getString("Category");
-                    categories += " " + category;
-                }
-                rs_category.close();
-
-                // add to index
-                //System.out.println("Indexing item: " + item_id);
-                IndexWriter writer = getIndexWriter();
+                
                 Document doc = new Document();
                 doc.add(new StringField("ItemID", String.valueOf(item_id), Field.Store.YES));
                 doc.add(new StringField("Name", name, Field.Store.YES));
-                fullSearchableText = item_id + " " + categories + " " + description;
+                fullSearchableText = item_id + " " + item_categories.get(item_id) + " " + description;
                 doc.add(new TextField("Content", fullSearchableText, Field.Store.NO));
                 writer.addDocument(doc);
             }
 
             // close connections
-            prepareQueryCategory.close();
             s.close();
             rs.close();
             conn.close();
