@@ -82,7 +82,7 @@ public class Indexer {
                 Document doc = new Document();
                 doc.add(new StringField("ItemID", String.valueOf(item_id), Field.Store.YES));
                 doc.add(new StringField("Name", name, Field.Store.YES));
-                fullSearchableText = item_id + " " + item_categories.get(item_id) + " " + description;
+                fullSearchableText = name + " " + item_categories.get(item_id) + " " + description;
                 doc.add(new TextField("Content", fullSearchableText, Field.Store.NO));
                 writer.addDocument(doc);
             }

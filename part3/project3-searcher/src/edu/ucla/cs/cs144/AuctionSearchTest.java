@@ -19,14 +19,13 @@ public class AuctionSearchTest {
 		String reply = as.echo(message);
 		System.out.println("Reply: " + reply);
 		
-		//String query = "superman";
-		//String query = "kitchenware";
-		String query = "star trek";
-		SearchResult[] basicResults = as.basicSearch(query, 0, 10);
-		System.out.println("Basic Search Query: " + query);
-		System.out.println("Received " + basicResults.length + " results");
-		for(SearchResult result : basicResults) {
-			System.out.println(result.getItemId() + ": " + result.getName());
+		String[] queries = {"superman", "kitchenware", "star trek"};
+		for (String query: queries) {
+			SearchResult[] basicResults = as.basicSearch(query, 0, 3);
+			System.out.println("Basic Search Query: " + query);
+			System.out.println("Received " + basicResults.length + " results");
+			for(SearchResult result : basicResults)
+				System.out.println(result.getItemId() + ": " + result.getName());
 		}
 		
 
