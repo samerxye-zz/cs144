@@ -182,11 +182,9 @@ public class AuctionSearch implements IAuctionSearch {
             Statement s = dbconn.createStatement();
             ResultSet rs = s.executeQuery("SELECT * FROM Item " + "WHERE ItemID = " + itemId);
             
-            System.out.println("hello1");
             if (!rs.isBeforeFirst())
                 return "";
             rs.first();
-            System.out.println("hello2");
 
             DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
             DocumentBuilder b = fac.newDocumentBuilder();
@@ -208,24 +206,23 @@ public class AuctionSearch implements IAuctionSearch {
                 root.appendChild(category); 
             }
 
-
             Element currently = doc.createElement("Currently");
             currently.appendChild(doc.createTextNode("$" + rs.getString("Currently")));
-            root.appendChild(name);
+            root.appendChild(currently);
 
             Element buy_price = doc.createElement("Buy_Price");
             if (rs.getDouble("Buy_Price") != 0) {
                 buy_price.appendChild(doc.createTextNode("$" + rs.getString("Buy_Price")));
-                root.appendChild(name);
+                root.appendChild(buy_price);
             }
 
             Element first_bid = doc.createElement("First_Bid");
             first_bid.appendChild(doc.createTextNode("$" + rs.getString("First_Bid")));
-            root.appendChild(name);
+            root.appendChild(first_bid);
 
             Element number_of_bids = doc.createElement("Number_of_Bids");
             number_of_bids.appendChild(doc.createTextNode(rs.getString("Number_of_Bids")));
-            root.appendChild(name);
+            root.appendChild(number_of_bids);
 
             // BIDS
             Element bids = doc.createElement("Bids");
@@ -239,7 +236,7 @@ public class AuctionSearch implements IAuctionSearch {
                 // BIDDER
                 user_id = rs_bids.getString("UserID");
                 Statement s_bidder = dbconn.createStatement();
-                ResultSet rs_bidder = s_bidder.executeQuery("SELECT * FROM Bidder WHERE UserID = `" + user_id + "`");
+                ResultSet rs_bidder = s_bidder.executeQuery("SELECT * FROM Bidder WHERE UserID = '" + user_id + "'");
                 rs_bidder.first();
 
                 Element bidder = doc.createElement("Bidder");
@@ -272,11 +269,11 @@ public class AuctionSearch implements IAuctionSearch {
             // LOCATION
             Element location = doc.createElement("Location");
             location.appendChild(doc.createTextNode(rs.getString("Location")));
-            System.out.println("Latitude: " + rs.getString("Latitude"));
-            // if (True) { // TODO: check
-            //     location.setAttribute("Latitude", rs.getString("Latitude"));
-            //     location.setAttribute("Longitude", rs.getString("Longitude"));
-            // }
+            if (!rs.getString("Latitude").equalsIgnoreCase("0") && !rs.getString("Longitude").equalsIgnoreCase("0")) {
+                location.setAttribute("Latitude", rs.getString("Latitude"));
+                location.setAttribute("Longitude", rs.getString("Longitude"));
+            }
+            root.appendChild(location);
 
 
             Element country = doc.createElement("Country");
@@ -293,9 +290,7 @@ public class AuctionSearch implements IAuctionSearch {
 
             Element seller = doc.createElement("Seller");
             Statement s_seller = dbconn.createStatement();
-            System.out.println("UserID: " + rs.getString("UserID"));
-            ResultSet rs_seller = s_seller.executeQuery("SELECT * FROM Seller WHERE UserID = `" + rs.getString("UserID") + "`");
-            System.out.println("Hello3");
+            ResultSet rs_seller = s_seller.executeQuery("SELECT * FROM Seller WHERE UserID = '" + rs.getString("UserID") + "'");
             rs_seller.first();
             seller.setAttribute("Rating", rs_seller.getString("Rating"));
             seller.setAttribute("UserID", rs_seller.getString("UserID"));
