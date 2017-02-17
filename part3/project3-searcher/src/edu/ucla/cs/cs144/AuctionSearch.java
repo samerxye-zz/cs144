@@ -34,6 +34,13 @@ import edu.ucla.cs.cs144.SearchRegion;
 import edu.ucla.cs.cs144.SearchResult;
 
 import java.util.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.w3c.dom.*;
+import javax.xml.transform.*;
+import java.io.StringWriter;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public class AuctionSearch implements IAuctionSearch {
 
@@ -151,9 +158,177 @@ public class AuctionSearch implements IAuctionSearch {
 		return results.toArray(new SearchResult[results.size()]);
 	}
 
+    String sqlTimeToXmlTime(String sqlTime) {
+        SimpleDateFormat xmlFormat = new SimpleDateFormat("MMM-dd-yy HH:mm:ss");
+        SimpleDateFormat sqlFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = sqlFormat.parse(sqlTime);    
+        }
+        catch(Exception e) {
+            System.out.println("ERROR: Cannot parse \"" + sqlTime + "\"");
+        }
+        return xmlFormat.format(date);
+    }
+
 	public String getXMLDataForItemId(String itemId) {
-		// TODO: Your code here!
-		return "";
+		String xmlstore = "";
+        Connection dbconn = null;
+        // Create a connection to the database
+        try 
+        {
+            // Connection to db manager
+            dbconn = DbManager.getConnection(true);
+            Statement s = dbconn.createStatement();
+            ResultSet rs = s.executeQuery("SELECT * FROM Item " + "WHERE ItemID = " + itemId);
+            
+            System.out.println("hello1");
+            if (!rs.isBeforeFirst())
+                return "";
+            rs.first();
+            System.out.println("hello2");
+
+            DocumentBuilderFactory fac = DocumentBuilderFactory.newInstance();
+            DocumentBuilder b = fac.newDocumentBuilder();
+            org.w3c.dom.Document doc = b.newDocument();
+
+            Element root = doc.createElement("Item");
+            root.setAttribute("ItemID", itemId);
+            doc.appendChild(root);
+
+            Element name = doc.createElement("Name");
+            name.appendChild(doc.createTextNode(rs.getString("Name")));
+            root.appendChild(name); 
+
+            Statement s_category = dbconn.createStatement();
+            ResultSet rs_category = s_category.executeQuery("SELECT Category FROM Category WHERE ItemID = " + itemId);
+            while (rs_category.next()) {
+                Element category = doc.createElement("Category");
+                category.appendChild(doc.createTextNode(rs_category.getString("Category")));
+                root.appendChild(category); 
+            }
+
+
+            Element currently = doc.createElement("Currently");
+            currently.appendChild(doc.createTextNode("$" + rs.getString("Currently")));
+            root.appendChild(name);
+
+            Element buy_price = doc.createElement("Buy_Price");
+            if (rs.getDouble("Buy_Price") != 0) {
+                buy_price.appendChild(doc.createTextNode("$" + rs.getString("Buy_Price")));
+                root.appendChild(name);
+            }
+
+            Element first_bid = doc.createElement("First_Bid");
+            first_bid.appendChild(doc.createTextNode("$" + rs.getString("First_Bid")));
+            root.appendChild(name);
+
+            Element number_of_bids = doc.createElement("Number_of_Bids");
+            number_of_bids.appendChild(doc.createTextNode(rs.getString("Number_of_Bids")));
+            root.appendChild(name);
+
+            // BIDS
+            Element bids = doc.createElement("Bids");
+
+            Statement s_bids = dbconn.createStatement();
+            ResultSet rs_bids = s_bids.executeQuery("SELECT * FROM Bid WHERE ItemID = " + itemId);
+            String user_id;
+            while (rs_bids.next()) {
+                Element bid = doc.createElement("Bid");
+
+                // BIDDER
+                user_id = rs_bids.getString("UserID");
+                Statement s_bidder = dbconn.createStatement();
+                ResultSet rs_bidder = s_bidder.executeQuery("SELECT * FROM Bidder WHERE UserID = `" + user_id + "`");
+                rs_bidder.first();
+
+                Element bidder = doc.createElement("Bidder");
+                bidder.setAttribute("Rating", rs_bidder.getString("Rating"));
+                bidder.setAttribute("UserID", rs_bidder.getString("UserID"));
+
+                Element bidder_location = doc.createElement("Location");
+                bidder_location.appendChild(doc.createTextNode(rs_bidder.getString("Location")));
+                bidder.appendChild(bidder_location);
+                
+                Element bidder_country = doc.createElement("Country");
+                bidder_country.appendChild(doc.createTextNode(rs_bidder.getString("Country")));
+                bidder.appendChild(bidder_country);
+
+                // BID
+                bid.appendChild(bidder);
+
+                Element bid_time = doc.createElement("Time");
+                bid_time.appendChild(doc.createTextNode(sqlTimeToXmlTime(rs_bids.getString("Time")))); //CHECK TIME?!?!
+                bid.appendChild(bid_time);
+
+                Element bid_amount = doc.createElement("Amount");
+                bid_amount.appendChild(doc.createTextNode("$" + rs_bids.getString("Amount")));
+                bid.appendChild(bid_amount);
+
+                bids.appendChild(bid); 
+            }
+            root.appendChild(bids);
+
+            // LOCATION
+            Element location = doc.createElement("Location");
+            location.appendChild(doc.createTextNode(rs.getString("Location")));
+            System.out.println("Latitude: " + rs.getString("Latitude"));
+            // if (True) { // TODO: check
+            //     location.setAttribute("Latitude", rs.getString("Latitude"));
+            //     location.setAttribute("Longitude", rs.getString("Longitude"));
+            // }
+
+
+            Element country = doc.createElement("Country");
+            country.appendChild(doc.createTextNode(rs.getString("Country")));
+            root.appendChild(country);
+
+            Element started = doc.createElement("Started");
+            started.appendChild(doc.createTextNode(sqlTimeToXmlTime(rs.getString("Started"))));
+            root.appendChild(started);
+
+            Element ends = doc.createElement("Ends");
+            ends.appendChild(doc.createTextNode(sqlTimeToXmlTime(rs.getString("Ends"))));
+            root.appendChild(ends);
+
+            Element seller = doc.createElement("Seller");
+            Statement s_seller = dbconn.createStatement();
+            System.out.println("UserID: " + rs.getString("UserID"));
+            ResultSet rs_seller = s_seller.executeQuery("SELECT * FROM Seller WHERE UserID = `" + rs.getString("UserID") + "`");
+            System.out.println("Hello3");
+            rs_seller.first();
+            seller.setAttribute("Rating", rs_seller.getString("Rating"));
+            seller.setAttribute("UserID", rs_seller.getString("UserID"));
+            root.appendChild(seller);
+
+            Element description = doc.createElement("Description");
+            description.appendChild(doc.createTextNode(rs.getString("Description")));
+            root.appendChild(description);
+
+            TransformerFactory tfInstance = TransformerFactory.newInstance();
+            Transformer transformerInstance = tfInstance.newTransformer();
+            transformerInstance.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            StringWriter writer = new StringWriter();
+            transformerInstance.transform(new DOMSource(doc), new StreamResult(writer));
+            xmlstore = writer.getBuffer().toString();
+
+
+            s.close();
+        } catch (SQLException ex){
+            System.out.println("SQLException caught");
+            System.out.println("---");
+            while ( ex != null ){
+                System.out.println("Message   : " + ex.getMessage());
+                System.out.println("SQLState  : " + ex.getSQLState());
+                System.out.println("ErrorCode : " + ex.getErrorCode());
+                System.out.println("---");
+                ex = ex.getNextException();
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally { 
+            return xmlstore;
+        }
 	}
 	
 	public String echo(String message) {
