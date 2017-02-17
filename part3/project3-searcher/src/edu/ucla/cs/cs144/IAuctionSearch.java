@@ -37,7 +37,7 @@ public interface IAuctionSearch {
 	 * SearchResult objects.
 	 */
 	public SearchResult[] spatialSearch(String query, SearchRegion region, 
-			int numResultsToSkip, int numResultsToReturn);
+			int numResultsToSkip, int numResultsToReturn) throws IOException, ParseException;
 	
 	/**
 	 * Rebuilds an Item XML Element (and all of its sub-Elements), for the given
