@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<title><%= request.getAttribute("title") %></title>
+		<link rel="stylesheet" type="text/css" href="./resources/main.css">
 		<link rel="stylesheet" type="text/css" href="./resources/itemServlet.css">
 	</head>
 	<body>
@@ -9,6 +10,10 @@
 		<c:choose>
 			<c:when test="${isValidID}">
 				${result}
+				<script type="text/javascript">
+					var result = '${result}';
+
+				</script>>
 			</c:when>
 			<c:otherwise>
 				<p>Invalid ID!</p>

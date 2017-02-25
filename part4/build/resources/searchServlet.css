@@ -1,64 +1,47 @@
-/*  SECTIONS  */
-.section {
-	clear: both;
-	padding: 0px;
-	margin: 0px;
-}
-
-/*  COLUMN SETUP  */
-.col {
-	display: block;
-	float:left;
-	margin: 1% 0 1% 1.6%;
-}
-.col:first-child { margin-left: 0; }
-
-/*  GROUPING  */
-.group:before,
-.group:after { content:""; display:table; }
-.group:after { clear:both;}
-.group { zoom:1; /* For IE 6/7 */ }
-/*  GRID OF TWO  */
-.span_2_of_2 {
-	width: 100%;
-}
-.span_1_of_2 {
-	width: 49.2%;
-}
-
-/*  GO FULL WIDTH AT LESS THAN 480 PIXELS */
-
-@media only screen and (max-width: 480px) {
-	.col { 
-		margin: 1% 0 1% 0%;
-	}
-}
-
-@media only screen and (max-width: 480px) {
-	.span_2_of_2, .span_1_of_2 { width: 100%; }
-}
 
 #inputQueryText {
 	display: inline-block;
+	font-family: 'Nunito Sans', sans-serif;
 }
+
 #searchInterfaceHeading {
 	margin-bottom: 0px;
+	font-family: 'Lobster', cursive;
+	user-select: none;
 }
 
 table {
     font-family: arial, sans-serif;
     border-collapse: collapse;
-    width: 100%;
+    width: 60vw;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .tableElement {
     border: 1px solid #dddddd;
     text-align: left;
     padding: 8px;
+    text-align: center;
+    font-family: 'Nunito Sans', sans-serif;
 }
 
-tr:nth-child(even) {
-    background-color: #dddddd;
+tr:hover {
+	cursor: pointer;
+	background-color: black;
+	color: white;
+}
+
+#tableColumnHeadingRow:hover {
+	cursor: default;
+	background-color: white;
+	color: black;
+	text-align: center;
+}
+
+#tableColumnHeadingRow {
+	text-align: center;
+	font-family: 'Lobster', cursive;
 }
 
 #searchInterfacePageChanger {
@@ -71,15 +54,12 @@ tr:nth-child(even) {
 .pageChanger, #pageNumber {
 	display: table-cell;
     vertical-align: middle;
+    font-family: 'Lobster', cursive;
 }
 
 .pageChanger > img {
 	height: 15px;
 	width: 15px;
-}
-
-body {
-	text-align: center;
 }
 
 .pageChanger:hover {
