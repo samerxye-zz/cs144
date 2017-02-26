@@ -11,7 +11,7 @@
 			<form>
 				<p id="inputQueryText">Query: </p>
 				<input type="text" name="query" value="${query}">
-				<input type="submit" value="Submit">
+				<input type="submit" value="Submit" id="but">
 			</form>
 		</div>
 		<c:choose>
@@ -24,7 +24,7 @@
 			<c:when test="${isQuery}">
 				<div id="searchInterfaceResults">
 						<table id="tableOuter">
-							<tr id="tableColumnHeadingRow">
+							<tr class="tableColumnHeadingRow">
 								<th class="tableElement">ItemID</th>
 								<th class="tableElement">Name</th>
 							</tr>

@@ -1,4 +1,3 @@
-
 #inputQueryText {
 	display: inline-block;
 	font-family: 'Nunito Sans', sans-serif;
@@ -8,40 +7,6 @@
 	margin-bottom: 0px;
 	font-family: 'Lobster', cursive;
 	user-select: none;
-}
-
-table {
-    font-family: arial, sans-serif;
-    border-collapse: collapse;
-    width: 60vw;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.tableElement {
-    border: 1px solid #dddddd;
-    text-align: left;
-    padding: 8px;
-    text-align: center;
-    font-family: 'Nunito Sans', sans-serif;
-}
-
-tr:hover {
-	cursor: pointer;
-	background-color: black;
-	color: white;
-}
-
-#tableColumnHeadingRow:hover {
-	cursor: default;
-	background-color: white;
-	color: black;
-	text-align: center;
-}
-
-#tableColumnHeadingRow {
-	text-align: center;
-	font-family: 'Lobster', cursive;
 }
 
 #searchInterfacePageChanger {
@@ -64,4 +29,25 @@ tr:hover {
 
 .pageChanger:hover {
 	cursor: pointer;
+}
+
+#but {
+	display: inline-block;
+	margin: 0 10px 0 0;
+	font-size: 16px;
+	line-height: 1.8;
+	box-shadow: none;
+	border-radius: 5px;
+	background-color: black;
+	color: mintcream;
+	user-select: none;
+  	cursor: pointer;
+	font-family: "Lobster", cursive;
+	transition: all 0.4s ease;
+}
+
+#but:hover {
+  outline: none;
+  background-color: mintcream;
+  color: black;
 }
