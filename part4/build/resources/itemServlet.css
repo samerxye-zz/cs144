@@ -109,9 +109,10 @@ div#categoryDisplay, div#bidsDisplay {
 }
 
 #bidsTableHeadingRow {
-	height: 4vh;
-	font-family: 'Nunito Sans', sans-serif;
-	font-weight: bold;
+	height: 21px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: bold;
+    text-align: center;
 }
 
 #bidsAmountColumn {
@@ -171,4 +172,16 @@ div#categoryDisplay, div#bidsDisplay {
 #backItemInterfacePage {
 	height: 60px;
 	cursor: pointer;
+}
+
+#map_canvas {
+	width: 40%;
+    height: 40%;
+    position: relative;
+    overflow: hidden;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    border: 1px solid #dddddd;
 }

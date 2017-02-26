@@ -93,6 +93,12 @@
 							<td class="tableElement" id="Longitude"></td>
 						</tr>
 					</table>
+					<script type="text/javascript" 
+					    src="http://maps.google.com/maps/api/js?sensor=false"> 
+					</script> 
+					<body onload="initialize()"> 
+					  <div id="map_canvas" style="width:40%; height:40%"></div> 
+					</body> 
 				</div>
 				<div id="bidsDisplay">
 					<h1 id="bidsDisplayHeading">Bids</h3>
@@ -172,6 +178,7 @@
 						});
 					}
 
+
 					var $loc = $xml.find("Location");
 					var loc = $loc.text();
 					$("td#Location").text(loc);
@@ -180,10 +187,25 @@
 						$("td#Latitude").text(latitude);
 						var longitude = $loc.attr("Longitude");
 						$("td#Longitude").text(longitude);
+						function initialize() { 
+							var latlng = new google.maps.LatLng(latitude, longitude); 
+							var myOptions = { 
+							zoom: 14, // default is 8  
+							center: latlng, 
+							mapTypeId: google.maps.MapTypeId.ROADMAP 
+							}; 
+							var map = new google.maps.Map(document.getElementById("map_canvas"),
+							myOptions); 
+							var marker = new google.maps.Marker({
+								position: latlng,
+								map: map
+							});
+						} 
 					}
 					else {
 						$("tr#LongitudeRow").hide();
 						$("tr#LatitudeRow").hide();
+						$("div#map_canvas").hide();
 					}
 
 					var country = $xml.find("Country").text();
