@@ -9,6 +9,12 @@
 		<script src="http://underscorejs.org/underscore-min.js"></script>
 	</head>
 	<body>
+		<div id="backItemInterfacePageDiv"><img id="backItemInterfacePage" src="./resources/backpage.png"></div>
+		<script type="text/javascript">
+			$("img#backItemInterfacePage").on("click", function() {
+				window.history.back();
+			});
+		</script>
 		<h1 id="itemInterfaceHeading">Item Interface</h1>
 		<c:choose>
 			<c:when test="${isValidID}">

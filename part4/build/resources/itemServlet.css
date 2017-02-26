@@ -155,3 +155,13 @@ div#categoryDisplay, div#bidsDisplay {
     border: 1px solid #dddddd;
     display: none;
 }
+
+#backItemInterfacePageDiv {
+	display: block;
+    position: fixed;
+}
+
+#backItemInterfacePage {
+	height: 60px;
+	cursor: pointer;
+}
