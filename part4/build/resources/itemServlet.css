@@ -48,6 +48,7 @@ div#categoryDisplay, div#bidsDisplay {
     top: -10px;
     position: relative;
     width: 15%;
+    word-wrap: break-word
 }
 
 .bidUserIDRating {
@@ -61,12 +62,15 @@ div#categoryDisplay, div#bidsDisplay {
 	height: 50%;
     top: 4px;
     position: relative;
+    font-size: 15px;
+    word-wrap: break-word
 }
 
 .bidRating {
     height: 50%;
     top: 4px;
     position: relative;
+    word-wrap: break-word
 }
 
 .bidTime {
@@ -80,6 +84,7 @@ div#categoryDisplay, div#bidsDisplay {
     top: -12px;
     width: 35%;
     left: 10px;
+    word-wrap: break-word
 }
 
 .bidLocCountry {
@@ -93,12 +98,14 @@ div#categoryDisplay, div#bidsDisplay {
     height: 50%;
     top: 4px;
     position: relative;
+    word-wrap: break-word
 }
 
 .bidCountry {
     height: 50%;
     top: 4px;
     position: relative;
+    word-wrap: break-word
 }
 
 #bidsTableHeadingRow {
