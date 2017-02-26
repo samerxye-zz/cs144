@@ -109,9 +109,10 @@ div#categoryDisplay, div#bidsDisplay {
 }
 
 #bidsTableHeadingRow {
-	height: 4vh;
-	font-family: 'Nunito Sans', sans-serif;
-	font-weight: bold;
+	height: 21px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: bold;
+    text-align: center;
 }
 
 #bidsAmountColumn {
