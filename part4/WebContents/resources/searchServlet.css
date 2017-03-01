@@ -63,11 +63,15 @@
 	background-color: black;
 }
 
+.ui-autocomplete {
+	width: 175px;
+}
+
 #inputSearchDiv {
 	position: relative;
     left: 0%;
     height: 24.72px;
-    width: 12vw;
+    width: 175px;
     display: inline-block;
     margin-bottom: auto;
     margin-top: auto;
@@ -81,7 +85,7 @@
     background: transparent;
     margin-left: auto;
     margin-right: auto;
-    width: 12vw;
+    width: 175px;
 }
 
 #autocomplete {
@@ -92,5 +96,5 @@
     background: transparent;
     margin-left: auto;
     margin-right: auto;
-    width: 12vw;
+    width: 175px;
 }
