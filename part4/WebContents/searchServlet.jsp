@@ -13,7 +13,10 @@
 		<div id="queryForm" class="ui-widget">
 			<form>
 				<p id="inputQueryText">Query: </p>
-				<input type="text" name="query" value="${query}" onKeyUp="sendAjaxRequest(this.value);">
+				<div id="inputSearchDiv">
+					<input id="mainInput" type="text" name="query" type="text" value="${query}" onKeyUp="sendAjaxRequest(event, this.value);">
+					<input id="autocomplete" type="text" disabled="disabled" />
+				</div>
 				<input type="submit" value="Submit" id="but">
 			</form>
 		</div>
@@ -81,11 +84,14 @@
 		<script type="text/javascript">
 			var xmlHttp = new XMLHttpRequest();
 
-			function sendAjaxRequest(input) {
+			function sendAjaxRequest(event, input) {
 				var request = "suggest?query=" + encodeURI(input);
 				xmlHttp.open("GET", request);
 				xmlHttp.onreadystatechange = showSuggestion;
 				xmlHttp.send(null);
+				if(input === "") {
+					$("input#autocomplete").val("");
+				}
 			}
 
 			function showSuggestion() {
@@ -97,6 +103,13 @@
 						var suggestion = $(entry).find('suggestion').attr('data');
 						suggestions.push(suggestion);
 					});
+					if(completeSuggestions.length === 0) {
+						$("input#autocomplete").val("");
+						console.log("");
+					} else {
+						$("input#autocomplete").val($(completeSuggestions[0]).find('suggestion').attr('data'));
+						console.log($(completeSuggestions[0]).find('suggestion').attr('data'));
+					}
 				}
 			}
 
