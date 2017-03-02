@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.net.URL;
+import java.net.URLEncoder;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
@@ -22,10 +23,14 @@ public class ProxyServlet extends HttpServlet implements Servlet {
     {
     	// Receive query
         String query = request.getParameter("query");
-        if (query == null)
-        	return; // TODO: report error
+        if (query == null) {
+            // TODO: remove redundant code
+            PrintWriter out = response.getWriter();
+            out.println("Error, no query!");
+            out.close();
+        }
 
-    	String url = "http://google.com/complete/search?output=toolbar&q=" + query;
+    	String url = "http://google.com/complete/search?output=toolbar&q=" + URLEncoder.encode(query, "UTF-8");;
 
         // Open connection to Google server
         URL url_obj = new URL(url);
@@ -34,7 +39,11 @@ public class ProxyServlet extends HttpServlet implements Servlet {
 		int responseCode = con.getResponseCode();
 
 		if (responseCode != 200) {
-			return; // TODO: report error
+            // TODO: remove redundant code
+            PrintWriter out = response.getWriter();
+            out.println("Url: " + url);
+            out.println("Error: Response code received: " + responseCode);
+            out.close();
 		}
 
 		// Get response from Google Server
